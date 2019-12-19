@@ -36,6 +36,9 @@ class binary_tree():
         self._tree_root = None
         self._map = {}
 
+    def get_path_map(self):
+        return self._map
+
     def add_leaf(self, path, value):
         """
         path: string path to where leaf should be
@@ -111,6 +114,26 @@ class binary_tree():
     def get_node_path(self, value):
         """ return node path for value if exists """
         return self._map.get(value, None)
+
+    def join_tree(self, left_tree, right_tree, new_root_value):
+        """
+            left_tree: Binary Tree
+            right_tree: Binary Tree
+            new_root_value: Object
+        """
+
+        root_node = Node(new_root_value)
+        root_node.set_left(left_tree)
+        root_node.set_right(right_tree)
+
+        # Update Node Paths
+        left_map = self._update_map(left_tree.get_path_map(), 0)
+        right_map = self._update_map(right_tree.get_path_map(), 1)
+
+        self._map = left_map.extend(right_map)
+        self._tree_root = root_node
+        
+        
         
 
     def get_seq_map(self):
@@ -119,6 +142,11 @@ class binary_tree():
     def _update_map_new_root(self, prepend=0):
         for key in self._map.keys():
             self._map[key] = "{}{}".format(prepend, self._map[key])
+
+    def _update_map(self, tree_map, prepend=0):
+        for key in tree_map.keys():
+            tree_map[key] = "{}:{}".format(prepend, tree_map[key])
+        return tree_map
 
         
     def _generate_seq_table(self):
@@ -131,7 +159,7 @@ class binary_tree():
             return 0
 
 
-class Hoffman():
+class Fano():
     """ Hoffman Example Class """
     
     def __init__(self):
@@ -149,6 +177,21 @@ class Hoffman():
         sorted_tuple = sorted(char_freq.items(), key = lambda kv:(kv[1], kv[0]))
 
         return sorted_tuple
+
+    def _create_tree(self, tree, freq_list):
+        if len(freq_list) == 2:
+            # return pair
+            pass
+        if len(freq_list) == 1:
+            # return single node
+        else:
+            # split left and right
+            left_tree = self._create_tree()
+            right_tree = self._create_tree()
+
+            # crate new tree w/ left and right
+            
+            # return new tree
 
     def encode_string(self, string):
         self._encode_stats['string'] = string
@@ -211,17 +254,17 @@ class Hoffman():
 
 
 if __name__ == '__main__':
-    hf = Hoffman()
+    fano = Fano()
     #string = open('../data/text_data.txt', 'r').read()
     string = 'hi my name is emily'
 
     start = datetime.now()
-    encoded_string, seq_table = hf.encode_string(string)
+    encoded_string, seq_table = fano.encode_string(string)
     encoded_time = datetime.now()
     print(encoded_string)
     print('Encoding Took: {}'.format(encoded_time-start))
 
-    decoded_string = hf.decode_string(encoded_string, seq_table)
+    decoded_string = fano.decode_string(encoded_string, seq_table)
     print(decoded_string)
     print('Decoding Took: {}'.format(datetime.now() - encoded_time))
 
